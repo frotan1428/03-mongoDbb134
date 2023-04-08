@@ -1,0 +1,124 @@
+//-----------------DAY 04-----------------
+1 // Find the number of documents with a points less than 19
+
+//first way: find() + count()
+use("school");
+db.grades.find({"points":{$lt:19}}).count()
+
+//second way : use aggregate with cout
+use("school");
+var pipeline =[
+  {$match:{"points":{$lt:19}}}, //filter
+  {$count:"points less than 19"} //count the documents and add new field name
+];
+
+db.grades.aggregate(pipeline);
+
+use("school")
+db.exams.insertMany(
+[{"student":"dave", "midterm":80,  "final":100},
+{"student":"dave",  "midterm":85,  "final":52},
+{"student":"fred",  "midterm":60,  "final":100},
+{"student":"wilma", "midterm":55,  "final":50},
+{"student":"barnie","midterm":60,  "final":75},
+{"student":"wilma", "midterm":94,  "final":99},
+{"student":"betty", "midterm":95,  "final":91}])
+
+
+use("school")
+db.accounting.insertMany(
+[{"name":"dave", "expense":[-80, -40, -50, -120], "earn":[100, 150]},
+{"name":"dave",  "expense":[-60, -30, -20],       "earn":[200, 50, 130]},
+{"name":"fred",  "expense":[-80, -40, -50],       "earn":[300, 450]},
+{"name":"wilma", "expense":[-80, -120],           "earn":[500, 50, 70, 10]},
+{"name":"barnie","expense":[-140, -50, -120],     "earn":[400]},
+{"name":"wilma", "expense":[-120],                "earn":[22, 375, 65]},
+{"name":"betty", "expense":[-180, -40, -70, -12], "earn":[500, 650, 400]}]);
+
+
+2//to add temproray fields we use $addFields
+//2 to create temporary field which will store sum of midterm and final
+
+use("school");
+//db.exams.aggregate({$addFields:{"results":{$sum:["$midterm", "$final"]}, successfull: true}})
+db.exams.aggregate({$addFields:{"results":{$add:["$midterm", "$final"]}, successfull: true}})
+
+3a//find total expense and total earn for each document from accounting
+
+use("school");
+db.accounting.aggregate({$addFields:{"total_expense":{$sum:"$expense"}, 
+                                    "total_earn":{$sum:"$earn"}}});
+
+3b//find total expense and total earn, and balance from accounting collection
+
+use("school");
+var pipeline = [
+  {$addFields:{"total_expense":{$sum:"$expense"}, 
+                                    "total_earn":{$sum:"$earn"}}},
+
+  {$addFields:{"balance":{$add:["$total_expense", "$total_earn"]}}}
+                
+]
+db.accounting.aggregate(pipeline)
+
+3c//sort the balance in desc order in prev.example
+
+use("school");
+var pipeline = [
+  {$addFields:{"total_expense":{$sum:"$expense"}, 
+                                    "total_earn":{$sum:"$earn"}}},
+
+  {$addFields:{"balance":{$add:["$total_expense", "$total_earn"]}}},
+
+  {$sort:{"balance":-1}}
+                
+]
+db.accounting.aggregate(pipeline)
+/*
+//without using variable:pipeline
+
+
+db.accounting.aggregate([
+  {$addFields:{"total_expense":{$sum:"$expense"}, 
+                                    "total_earn":{$sum:"$earn"}}},
+
+  {$addFields:{"balance":{$add:["$total_expense", "$total_earn"]}}},
+
+  {$sort:{"balance":-1}}
+                
+])
+*/
+3d//if we want to display name and  fields we added ? 
+//1st way
+use("school");
+var pipeline = [
+  {$addFields:{"total_expense":{$sum:"$expense"}, 
+                                    "total_earn":{$sum:"$earn"}}},
+
+  {$addFields:{"balance":{$add:["$total_expense", "$total_earn"]}}},
+
+  {$sort:{"balance":-1}},
+  {$project:{"_id":0, "name":1, "total_expense":1, "total_earn":1, "balance":1}}
+  //for fields we want to project, we used 1
+                
+]
+db.accounting.aggregate(pipeline)
+
+//2nd way
+use("school");
+var pipeline = [
+  {$addFields:{"total_expense":{$sum:"$expense"}, 
+                                    "total_earn":{$sum:"$earn"}}},
+
+  {$addFields:{"balance":{$add:["$total_expense", "$total_earn"]}}},
+
+  {$sort:{"balance":-1}},
+  {$project:{"_id":0, "earn":0, "expense":0}}
+  //for fields we don't want to project, we used 0
+                
+]
+db.accounting.aggregate(pipeline)
+
+
+use("school");
+db.accounting.find()

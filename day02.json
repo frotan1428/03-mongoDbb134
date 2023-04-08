@@ -1,0 +1,143 @@
+22// to bring first document from collection
+db.electronics.find().limit(1)
+
+OR
+db.electronics.findOne()
+
+23// to bring first document which has name of "laptop"
+db.electronics.find({name:"laptop"}).limit(1)
+OR 
+db.electronics.findOne({"name":"laptop"})
+
+24// Comparison Operators
+	
+		Equal to              ==> $eq
+		Less Than             ==> $lt
+		Greater Than          ==> $gt
+		less than or equal    ==> $lte
+		greater than or equal ==> $gte
+		not equal			  ==> $ne
+		inside array 		  ==> $in
+		not inside array	  ==>$nin
+
+
+25// to bring document which has price of 260
+db.electronics.find({"price": 260})
+
+OR
+
+db.electronics.find({"price":{$eq:260}})
+
+
+26//if i do not want to see id in above output
+db.electronics.find({"price":{$eq:260}},  {"_id":0})
+
+27//to bring documents where price is greater than or equal 300
+db.electronics.find({"price":{$gte:300}}, {"_id":0})
+
+28// to bring documents where price is equal to 600, 700 or 800
+
+//using or:
+db.electronics.find({$or:[{"price":600}, {"price":700}, {"price":800}]})
+
+//using $in
+db.electronics.find({"price":{$in:[600, 700, 800]}})
+
+29//// to bring documents where price is not equal to 600, 700 or 800
+db.electronics.find({"price":{$nin:[600, 700, 800]}})
+
+
+//======================== UPDATE ==========================
+
+//=================================================================
+//            findOneAndUpdate() - findOneAndReplace()
+//=================================================================
+
+// A - findOneAndReplace() 
+//----------------------------
+	1) Searches the document, removes everything inside this document and sets 
+		the entries of the given replacement document.
+	2) not entered fields will removed (looks like PUT method in API)
+	3) it returns the original document (document before update )
+
+// B - findOneAndUpdate() 
+//----------------------------
+	1) searches the document and updates just the entries in the given update 
+		document. The other entries in the found document will remain.
+		(looks like PATCH method in API)
+	2) In addition, we can use different atomic operators such as $set(to set directly), $unset, $inc(to increase or decrease), 
+		$mul(to multiply)etc., with the update method.
+	3) it returns the original document (document before update )
+
+
+//=================================================================
+		NOTE: both methods return original document (document before update)
+		syntax: ({filter}, {update}, {options})
+
+
+30// replace document where price is greater than 700 
+	//with name "samsung updated s23"
+	//pric 850
+	db.electronics.findOneAndReplace({"price":{$gt:700}}, {"name":"samsung updated s23", "price":850})	
+
+
+31//replace document which has lowest price where price is above 200
+// with name "cheapest price"
+ 
+db.electronics.findOneAndReplace({"price":{$gt:200}}, {"name":"cheapest item"}, {sort:{"price":1}})
+
+32//replace document which has highest price where price is above 200
+// with name "most expensive item"
+
+db.electronics.findOneAndReplace({"price":{$gt:200}}, {"name":"most expensive item"}, {sort:{"price":-1}})
+
+
+33//update document which has the highest price where price is below 700
+// to name "updated item"
+db.electronics.findOneAndUpdate({"price":{$lt:700}}, {$set:{"name":"updated item"}}, {sort:{"price":-1}})
+
+
+34// update document which has the lowest price where price is above or eqaul to 700 with 
+	// new field "condition": "new"
+
+db.electronics.findOneAndUpdate({"price":{$lte:700}}, {$set:{"condition":"new"}}, {sort:{"price":-1}})
+
+// vscode is started .....
+
+
+use ("shop");
+db.electronics.find();
+
+35// find and update document where price is 600 to 
+//name "laptop" and price 650 
+//and display updated document
+
+use ("shop");
+db.electronics.findOneAndUpdate({"price":600},
+                                {$set:{"name":"latop", "price":650}},
+                                {returnNewDocument: true})
+
+36//find and update document which has price of 199 to 
+//price 299
+//name: "smart watch"
+//it the document does not exist insert it
+
+use ("shop");
+db.electronics.findOneAndUpdate({"price":199}, 
+                                {$set:{"name":"smart watch", "pice":299}},
+                                {upsert: true, returnNewDocument:true})
+
+                                //upsert = update + insert
+
+
+
+
+
+
+
+
+
+
+
+
+

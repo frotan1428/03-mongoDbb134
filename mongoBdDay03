@@ -1,0 +1,16 @@
+36//find and update document which has price of 199 to 
+//price 299
+//name: "smart watch"
+//it the document does not exist insert it
+
+
+use ("shop");
+db.electronics.findOneAndUpdate({"price":650}, 
+                                {$set:{"name":"smart watch", "pice":299}},
+                                {upsert: true, returnNewDocument:true})
+
+                                //upsert = update + insert
+37//
+
+use("shop")
+db.electronics.find();

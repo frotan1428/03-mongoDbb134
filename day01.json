@@ -1,0 +1,135 @@
+1// to clean the terminal
+cls
+
+2//to create db named shop
+use shop
+
+3 //to see the current db
+db
+
+4//to list all databasess
+show dbs
+
+5// to create collection named customer
+db.createCollection("customer")
+
+6//to see existing collections
+show collections
+
+7//to delete collection
+db.customers.drop()
+
+8. //to delete database
+db.dropDatabase()
+
+9// to insert documents inside collecion
+db.electronics.insertOne({"name":"TV", "price": 240})
+
+10//to insert multiple documents 
+db.electronics.insertOne({"name":"TV", "price": 240})
+
+//insert used to be used to insert single or multiple documement, 
+but it is depricate
+
+//for key single, double quates are used. 
+//for value quotes are used if the value is string 
+
+//we add documents without creating collection. collection will be created
+
+
+11//to see all documents 
+db.electronics.find()
+db.electronics.find().pretty() //pretty()is used to format the 
+//json document readable 
+
+12// to bring first two documetns
+db.electronics.find().limit(2)
+
+13// to bring 3rd document
+db.electronics.find().skip(2).limit(1)
+
+14// to bring 4th and 5th documents
+db.electronics.find().skip(3).limit(2)
+
+15//to get document named "TV"
+db.electronics.find({"name":"TV"})
+
+//find({filter})
+
+16// to bring document where name is "TV", and brand is LG
+
+db.electronics.find({"name":"TV", "brand":"LG"})
+//to bring the same result using and operator
+db.electronics.find({$and:[{"name":"TV"},{"brand":"LG"}]})
+
+17//to bring documents where name is TV or oppo
+db.electronics.find({$or:[{"name":"TV"}, {"name":"oppo"}]})
+
+
+18//to bring just prices of TV
+db.electronics.find({"name":"TV"},{"price":1})
+
+19//to not to id for the output
+db.electronics.find({"name":"TV"},{"price":1, "_id":0})
+
+//find({filter}, {projection}) //we can decide the fields using 0, 1
+
+20// to bring all documents' name and price
+db.electronics.find({},{"name":1, "price":1, "_id":0})
+
+21//to sort previous output according to price
+db.electronics.find({},{"name":1, "price":1, "_id":0}).sort("price")
+
+//sor() by default sort in ASC order
+//if you want to in DESC order then 
+db.electronics.find({},{"name":1, "price":1, "_id":0}).sort({"price":-1})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
